@@ -23,4 +23,6 @@ jobs:
         run: pip install mkdocs mkdocs-material
 
       - name: Deploy
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
         run: mkdocs gh-deploy --force
