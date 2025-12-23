@@ -11,3 +11,8 @@ theme:
     - content.code.copy
 nav:
   - Home: index.md
+  - Architecture:
+    - Layered: architecture/layered.md
+    - Microservices: architecture/microservices.md
+  - Databases:
+    - Indexing: databases/indexing.md
