@@ -1,6 +1,3 @@
 
-# Indexing           ← H1, main title
-## Types of Indexes   ← H2, first subsection
-### B-Tree           ← H3, nested subsection
-### Hash Index       ← H3, nested subsection
-## Performance Tips
+# Indexing
+![image](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRNxcnA7I2Aj6o44w6Mx__wf-1jvpMckV8glA&s)
