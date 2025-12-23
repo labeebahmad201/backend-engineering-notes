@@ -1,2 +1,10 @@
+site_name: Backend Engineering Notes
+site_description: Practical backend engineering notes
+site_author: labeeb
+
 theme:
   name: material
+  features:
+
+nav:
+  - Home: README.md
