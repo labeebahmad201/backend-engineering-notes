@@ -5,6 +5,9 @@ site_author: labeeb
 theme:
   name: material
   features:
-
+    - navigation.tabs
+    - navigation.sections
+    - search.highlight
+    - content.code.copy
 nav:
   - Home: index.md
