@@ -7,5 +7,5 @@ production-grade architecture.
 All my notes: [Engineering Knowledge Base](https://labeebahmad201.github.io/backend-engineering-notes/)
 
 ### 📫 Connect
-LinkedIn: [your-linkedin](https://www.linkedin.com/in/labeebahmad-5367b01b3/)
+LinkedIn: Click [here](https://www.linkedin.com/in/labeebahmad-5367b01b3/)
 ```
