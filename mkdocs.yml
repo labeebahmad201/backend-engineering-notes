@@ -26,6 +26,7 @@ nav:
       - Networking:
           - Overview: networking/index.md
           - OSI Model: networking/osi.md
+          - OSI Layer's unit of data: networking/osi-unit-of-data.md
   - Architecture:
       - Overview: architecture/layered.md
       - Layered: architecture/layered.md
