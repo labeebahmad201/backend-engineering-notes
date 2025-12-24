@@ -13,8 +13,7 @@ theme:
 nav:
   - Home:
       - Main: index.md
-      - Introduction: introduction.md
-      - Getting Started: getting-started.md
+      - Networking: networking/index.md
   - Architecture:
       - Layered: architecture/layered.md
       - Microservices: architecture/microservices.md
