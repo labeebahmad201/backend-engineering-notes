@@ -9,14 +9,15 @@ theme:
     - content.code.copy
     - header.autohide
 
-  # move search to sidebar
-  search:
-    provider: lunr
-    placement: sidebar
-  # make sidebar sub-items collapsed by default
-  navigation.expand: false
+# Move search to sidebar
+search:
+  provider: lunr
+  placement: sidebar
 
-# include custom CSS
+# Make sidebar sub-items collapsed by default
+navigation.expand: false
+
+# Include custom CSS
 extra_css:
   - css/extra.css
 
@@ -26,10 +27,10 @@ nav:
       - Networking:
           - Overview: networking/index.md
           - OSI Model: networking/osi.md
-          - OSI Layer's unit of data: networking/osi-unit-of-data.md
+          - OSI Layer's Unit of Data: networking/osi-unit-of-data.md
       - Databases:
-        - Overview: databases/overview.md
-        - Database Optimization From Indexes to Partitioning: database/Database-Optimization-From-Indexes-to-Partitioning.md
+          - Overview: databases/overview.md
+          - Database Optimization From Indexes to Partitioning: databases/Database-Optimization-From-Indexes-to-Partitioning.md
   - Architecture:
       - Overview: architecture/layered.md
       - Layered: architecture/layered.md
