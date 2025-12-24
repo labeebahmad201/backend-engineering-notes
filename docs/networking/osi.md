@@ -1,6 +1,4 @@
-# Networking
-
-## OSI model:
+# OSI model
 
 OSI model is a conceptual framework to understand how the network communication between two machine.
 These machine can be brower and server or server and server. But the model stays the same. 
