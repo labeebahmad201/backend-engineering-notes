@@ -33,15 +33,16 @@ Now when server wants to send a response, it sends that using the source IP that
 
 When request leaves from browser u may have private IP but router adds the public ip of router to the frame so this is how server would know where to send back response. 
 
+Media Access Control(MAC): Is a unique address that identifies your machine in LAN.
+Public IP: is what that uniquely identifies you machine/router globally.
+
+Have a look at the images below.
+
 ![](./../images/a-network.png)
 
 ![](./../images/image1.png)
 
 ![](./../images//image2.png)
-
-Media Access Control(MAC): is a unique address that identifies your machine.
-
-
 
 
 
