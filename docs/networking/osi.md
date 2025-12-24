@@ -1,7 +1,7 @@
 # OSI model
 
-OSI model is a conceptual framework to understand how the network communication between two machine.
-These machine can be brower and server or server and server. But the model stays the same. 
+OSI model is a conceptual framework to understand how the network communication between two machine works.
+These machines can be brower and server or server and server. But the model stays the same. 
 
 So GET request starts from the browser towards 111.168.0.1:80 includes headers, cookies, this is application layer(layer 7).
 
