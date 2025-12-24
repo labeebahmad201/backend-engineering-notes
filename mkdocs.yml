@@ -19,4 +19,5 @@ nav:
       - Microservices: architecture/microservices.md
   - Databases:
     - Indexing Topics: databases/indexing.md
-  - Networking: networking/index.md
+  - Networking:
+    - OSI Model: networking/osi.md
