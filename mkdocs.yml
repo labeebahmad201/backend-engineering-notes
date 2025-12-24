@@ -27,9 +27,10 @@ nav:
           - Overview: networking/index.md
           - OSI Model: networking/osi.md
           - OSI Layer's unit of data: networking/osi-unit-of-data.md
+      - Databases:
+        - Overview: databases/overview.md
+        - Database Optimization From Indexes to Partitioning.md: database/Database-Optimization-From-Indexes-to-Partitioning.md
   - Architecture:
       - Overview: architecture/layered.md
       - Layered: architecture/layered.md
       - Microservices: architecture/microservices.md
-  - Databases:
-      - Indexing Topics: databases/indexing.md
