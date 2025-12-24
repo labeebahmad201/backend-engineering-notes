@@ -9,14 +9,16 @@ theme:
     - navigation.sections
     - search.highlight
     - content.code.copy
-    - navigation.sections
 
 nav:
   - Home:
       - Main: index.md
-      - Networking: networking/index.md
+      - Networking:
+          - Overview: networking/index.md
+          - OSI Model: networking/osi.md
+          - TCP Layer: networking/tcp.md
   - Architecture:
       - Layered: architecture/layered.md
       - Microservices: architecture/microservices.md
   - Databases:
-    - Indexing Topics: databases/indexing.md
+      - Indexing Topics: databases/indexing.md
