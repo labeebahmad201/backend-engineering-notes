@@ -1,7 +1,15 @@
+/* Author avatar under title */
 .md-content .md-meta .md-author img {
-    border-radius: 50%;
-    width: 50px;
+    border-radius: 50%;      /* make it circular */
+    width: 50px;             /* size */
     height: 50px;
     margin-right: 10px;
     vertical-align: middle;
+}
+
+/* Optional: align author name with avatar */
+.md-content .md-meta .md-author {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
 }
