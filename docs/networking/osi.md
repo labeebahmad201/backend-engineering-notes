@@ -2,7 +2,7 @@
 title: OSI Model
 author:
   name: Labeeb
-  avatar: https://github.com/your-github-username.png
+  avatar: https://avatars.githubusercontent.com/u/44992984?v=4
 ---
 
 # OSI model
