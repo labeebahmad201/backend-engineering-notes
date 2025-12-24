@@ -9,6 +9,7 @@ theme:
     - navigation.sections
     - search.highlight
     - content.code.copy
+    - navigation.sections
 
 nav:
   - Home:
