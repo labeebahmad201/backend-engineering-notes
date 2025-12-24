@@ -6,7 +6,6 @@ theme:
   name: material
   features:
     - navigation.tabs
-    - navigation.sections
     - content.code.copy
   # move search to sidebar
   search:
