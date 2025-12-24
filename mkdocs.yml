@@ -12,6 +12,8 @@ theme:
   search:
     provider: lunr
     placement: sidebar
+  # make sidebar sub-items collapsed by default
+  navigation.expand: false
 
 nav:
   - Home:
