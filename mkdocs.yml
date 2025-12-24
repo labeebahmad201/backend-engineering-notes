@@ -16,7 +16,6 @@ nav:
       - Networking:
           - Overview: networking/index.md
           - OSI Model: networking/osi.md
-          - TCP Layer: networking/tcp.md
   - Architecture:
       - Layered: architecture/layered.md
       - Microservices: architecture/microservices.md
