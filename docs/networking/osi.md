@@ -50,6 +50,161 @@ Have a look at the images below.
 ![](./../images//image2.png)
 
 
+## Example of end to end communication between server and client: 
+
+Session layer has become obsolete that is why there is no mention of that here.
+And cookies and jwt tokens belong to **appliction layer**
+
+````
+GET /api/users HTTP/1.1
+Host: api.example.com
+Authorization: Bearer xyz...
+```
+
+**2. TLS Encryption (Between Layers):**
+```
+Encrypt entire HTTP request using TLS
+Result: Encrypted blob (unreadable)
+```
+
+**3. TCP (Layer 4 - Transport):**
+```
+Break encrypted blob into segments
+Add TCP headers:
+- Source port: 54321 (random high port)
+- Dest port: 443 (HTTPS)
+- Sequence numbers for ordering
+```
+
+**4. IP (Layer 3 - Network):**
+```
+Add IP headers:
+- Source IP: 192.168.1.100 (your private IP)
+- Dest IP: 93.184.216.34 (server public IP)
+- TTL: 64 <-- this is maximum number of routers a **packet** is allowed to pass through
+```
+
+**5. Ethernet (Layer 2 - Data Link):**
+```
+Add Ethernet frame:
+- Source MAC: Your NIC
+- Dest MAC: Router's MAC (next hop)
+```
+
+**6. Physical (Layer 1):**
+```
+Convert to electrical signals
+Send over Ethernet cable to router
+```
+
+---
+
+### **Router (NAT - Network Address Translation):**
+
+**Your statement about router adding public IP is CORRECT!**
+```
+Your machine: Private IP 192.168.1.100
+Router: Public IP 203.0.113.50
+
+Router's NAT table:
+┌────────────────────┬───────────────────────┐
+│ Internal           │ External              │
+├────────────────────┼───────────────────────┤
+│ 192.168.1.100:54321│ 203.0.113.50:12345   │
+└────────────────────┴───────────────────────┘
+
+Outgoing packet:
+Source: 192.168.1.100:54321 → 203.0.113.50:12345
+Dest: 93.184.216.34:443 (unchanged)
+
+Server sees:
+Source: 203.0.113.50:12345 (router's public IP)
+Dest: 93.184.216.34:443
+```
+
+**This is why server responds to router's public IP, not your private IP.**
+
+---
+
+### **Multiple Hops:**
+
+**Your statement is CORRECT!**
+```
+Hop 1: Your router (192.168.1.1)
+- Receive frame with your MAC
+- Extract IP packet
+- Look up routing table: forward to ISP
+- Build new frame with ISP router's MAC
+- Forward
+
+Hop 2: ISP router (10.0.0.1)
+- Receive frame
+- Extract IP packet
+- Routing table: forward to backbone router
+- New frame, forward
+
+... (5-15 hops typical)
+
+Final Hop: Server's router
+- Receive frame
+- Extract IP packet (dest: 93.184.216.34)
+- "That's me!"
+- Send to server's NIC
+```
+
+**Key insight you got RIGHT:**
+- IP addresses (source/dest) stay the same across all hops
+- MAC addresses change at every hop (next hop's MAC)
+
+---
+
+### **Response Journey:**
+```
+Server builds response:
+HTTP/1.1 200 OK
+Content-Type: application/json
+Set-Cookie: session=abc123
+
+{"users": [...]}
+```
+
+**Wrap in layers (reverse):**
+```
+TLS: Encrypt response
+TCP: Segment encrypted data
+    Source port: 443 (server)
+    Dest port: 12345 (router's NAT port)
+IP: Add headers
+    Source: 93.184.216.34 (server)
+    Dest: 203.0.113.50 (router's public IP)
+Ethernet: Add frame headers
+Physical: Send
+```
+
+**Router receives response:**
+```
+NAT table lookup:
+External port 12345 → Internal 192.168.1.100:54321
+
+Rewrite packet:
+Dest: 203.0.113.50:12345 → 192.168.1.100:54321
+
+Forward to your machine
+```
+
+**Your machine:**
+```
+Layer 1: Receive electrical signals
+Layer 2: Extract frame (MAC matches, accept)
+Layer 3: Extract IP packet (IP matches, accept)
+Layer 4: TCP reassembles segments
+TLS: Decrypt payload
+Layer 7: Browser receives HTTP response
+````
+
+
+
+
 
 <!--
 
