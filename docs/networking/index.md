@@ -1,3 +1,3 @@
 # Networking
 
-- [OSI Model](docs/networking/osi.md)
+- [OSI Model](networking/osi.md)
