@@ -1,3 +1,10 @@
+---
+title: OSI Model
+author:
+  name: Labeeb
+  avatar: https://github.com/your-github-username.png
+---
+
 # OSI model
 
 OSI model is a conceptual framework to understand how the network communication between two machine works.
