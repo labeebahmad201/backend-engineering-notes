@@ -7,12 +7,18 @@ theme:
   features:
     - navigation.tabs
     - content.code.copy
+    - header.autohide
+
   # move search to sidebar
   search:
     provider: lunr
     placement: sidebar
   # make sidebar sub-items collapsed by default
   navigation.expand: false
+
+# include custom CSS
+extra_css:
+  - css/extra.css
 
 nav:
   - Home:
