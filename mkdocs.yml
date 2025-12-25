@@ -4,7 +4,6 @@ site_author: labeeb
 
 theme:
   name: material
-  custom_dir: docs/overrides
   features:
     - navigation.tabs
     - content.code.copy
