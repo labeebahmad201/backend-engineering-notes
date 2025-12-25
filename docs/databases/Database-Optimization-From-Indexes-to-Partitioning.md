@@ -243,4 +243,24 @@ Execution Time: 11.071 ms
 - Now the index first narrows down by user_id (selective) and then filters by status.
 - Even though status alone is low cardinality, combining it with a selective column makes the index effective.
 
+## Understanding Cardinality Queries in SQL
 
+**1. Cardinality per User**
+
+```sql
+SELECT user_id, COUNT(*) AS cardinality
+FROM orders
+GROUP BY user_id
+ORDER BY cardinality DESC;
+```
+
+## Cardinality per Status
+
+```sql
+SELECT COUNT(*) AS cardinality
+FROM orders
+GROUP BY status
+ORDER BY cardinality DESC;
+```
+
+Whichever column has low cardinality, you can use that. 
