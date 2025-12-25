@@ -1,0 +1,20 @@
+{% extends "partials/page.html" %}
+
+{% block page_title %}
+  {{ super() }}
+
+  <div style="
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin:6px 0 20px 0;
+  ">
+    <img src="{{ base_url }}/images/labeeb.jpg"
+         width="32"
+         height="32"
+         style="border-radius:50%;">
+    <span style="font-size:14px;opacity:0.8;">
+      By labeeb
+    </span>
+  </div>
+{% endblock %}
