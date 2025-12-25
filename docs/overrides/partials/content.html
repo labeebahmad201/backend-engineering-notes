@@ -1,4 +1,4 @@
-{{ super() }}
+{% include "partials/content-original.html" ignore missing %}
 
 <div style="
   display:flex;
@@ -6,11 +6,11 @@
   gap:10px;
   margin:-12px 0 24px 0;
 ">
-  <img src="{{ base_url }}/assets/img/author.png"
+  <img src="{{ base_url }}/images/labeeb.jpg"
        width="32"
        height="32"
        style="border-radius:50%;">
   <span style="font-size:14px;opacity:0.8;">
-    By Labeeb
+    By labeeb
   </span>
 </div>
