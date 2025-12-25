@@ -35,6 +35,7 @@ nav:
       - Databases:
           - Overview: databases/overview.md
           - Database Optimization From Indexes to Partitioning: databases/Database-Optimization-From-Indexes-to-Partitioning.md
+          - Optimistic vs Pessimistic Locking: databases/optimistic-vs-pessimistic-locking.md
       - Security:
           - Overview: security/overview.md
   - Architecture:
