@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
     avatarDiv.style = "display:flex;align-items:center;gap:10px;margin:6px 0 20px 0;";
     avatarDiv.innerHTML = `
       <img src="${image_url}" width="32" height="32" style="border-radius:50%;">
-      <span style="font-size:14px;opacity:0.8;">By labeeb</span>
+      <span style="font-size:14px;opacity:0.8;">By Labeeb</span>
     `;
     firstHeading.insertAdjacentElement("afterend", avatarDiv);
   }
