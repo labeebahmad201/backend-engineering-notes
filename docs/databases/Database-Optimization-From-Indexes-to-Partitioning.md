@@ -225,3 +225,22 @@ Seq Scan on orders  (cost=0.00..218480.50 rows=2034870 width=44) (actual time=0.
 
 While point of indexing is skipping values that are not relevant but if a bunch of rows have same value then we skip x but y is then too much so we have to do full table scan. 
 
+
+## Solution: Combine with a High-Cardinality Column
+
+We can create a composite index on user_id (high cardinality) and status (low cardinality):
+
+```sql
+CREATE INDEX idx_orders_user_status
+ON orders(user_id, status);
+```
+```
+Index Scan using idx_orders_user_status on orders  (cost=0.43..84.83 rows=20 width=44) (actual time=1.641..11.025 rows=27 loops=1)
+  Index Cond: ((user_id = 43) AND (status = 'pending'::text))
+Planning Time: 3.779 ms
+Execution Time: 11.071 ms
+```
+- Now the index first narrows down by user_id (selective) and then filters by status.
+- Even though status alone is low cardinality, combining it with a selective column makes the index effective.
+
+
