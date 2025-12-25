@@ -22,6 +22,10 @@ navigation.expand: false
 extra_css:
   - css/extra.css
 
+# Include custom JS for avatar under first heading
+extra_javascript:
+  - js/author-avatar.js
+
 nav:
   - Home:
       - Main: index.md
