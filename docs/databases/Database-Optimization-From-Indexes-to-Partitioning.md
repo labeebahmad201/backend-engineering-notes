@@ -179,3 +179,46 @@ Execution Time: 0.294 ms
 - Adding an index on `user_id` transforms a slow query touching millions of rows into a near-instant lookup.  
 - PostgreSQL smartly uses a **bitmap scan** to minimize disk reads when multiple rows match, balancing speed and efficiency.
 
+## Explore Low-Cardinality Indexes
+
+Some columns, like status with only a few possible values (completed, pending), have low cardinality.
+
+Creating a standard index on low-cardinality columns may not help much.
+
+You can test with:
+```sql
+CREATE INDEX idx_orders_status ON orders(status);
+EXPLAIN ANALYZE
+SELECT * FROM orders WHERE status = 'pending';
+```
+
+Observe whether PostgreSQL actually uses the index. Sometimes a sequential scan is faster for low-cardinality columns because the index doesn’t reduce row scanning significantly.
+
+## Understanding Cost vs Actual Time in Queries
+
+When we run `EXPLAIN ANALYZE`, PostgreSQL shows two important metrics:
+
+```sql
+Seq Scan on orders  (cost=0.00..218480.50 rows=2034870 width=44) (actual time=0.047..2097.477 rows=1999924 loops=1)
+```
+## Breakdown
+
+### Cost
+
+- cost=0.00..218480.50
+    - 0.00 → estimated cost to return the first row
+    - 218480.50 → estimated cost to return all rows
+
+    Meaning: Planner’s prediction of work before executing the query
+    Units: Relative units; not milliseconds or dollars
+
+### Actual Time
+
+- actual time=0.047..2097.477
+    - 0.047 ms → time to return the first row
+    - 2097.477 ms → time to return all rows
+
+    Meaning: Measured time after execution, actual query duration
+
+**Takeaway: Not every column deserves an index; analyze cardinality and query patterns first.
+**
