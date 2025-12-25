@@ -222,3 +222,6 @@ Seq Scan on orders  (cost=0.00..218480.50 rows=2034870 width=44) (actual time=0.
 
 **Takeaway: Not every column deserves an index; analyze cardinality and query patterns first.
 **
+
+While point of indexing is skipping values that are not relevant but if a bunch of rows have same value then we skip x but y is then too much so we have to do full table scan. 
+
