@@ -264,3 +264,13 @@ ORDER BY cardinality DESC;
 ```
 
 Whichever column has low cardinality, you can use that. 
+
+## When composite indexes stop working
+Even with (user_id, status) composite index, if a user has millions of orders, queries like WHERE user_id = 123 AND status = 'pending' still scan many rows for that user.
+
+That tells us that we need to do query monitoring at the DB level cause most customers may not have that much data and for them queries may not be that slow.
+But there may be customers with significant number of rows that DBMS decides to use full table scan and performance degrades for that user.
+
+
+
+
