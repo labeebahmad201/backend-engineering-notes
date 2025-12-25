@@ -243,7 +243,7 @@ Execution Time: 11.071 ms
 - Now the index first narrows down by user_id (selective) and then filters by status.
 - Even though status alone is low cardinality, combining it with a selective column makes the index effective.
 
-## Understanding Cardinality Queries in SQL
+## Understanding Column Cardinality Queries in SQL
 
 **1. Cardinality per User**
 
