@@ -31,6 +31,8 @@ nav:
       - Databases:
           - Overview: databases/overview.md
           - Database Optimization From Indexes to Partitioning: databases/Database-Optimization-From-Indexes-to-Partitioning.md
+      - Security:
+          - Overview: security/overview.md
   - Architecture:
       - Overview: architecture/layered.md
       - Layered: architecture/layered.md
