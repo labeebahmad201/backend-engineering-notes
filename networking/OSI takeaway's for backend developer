@@ -1,0 +1,18 @@
+# Practical Takeaways From OSI model 
+
+Layer 7 (Application) - 90% of your work:
+
+```
+@Controller('users')
+export class UsersController {
+  @Get()
+  findAll(@Headers() headers, @Ip() ip) {
+    // Headers = Layer 7
+    // IP = Layer 3 (but you see it via Layer 7 abstraction)
+  }
+}
+```
+
+
+
+
