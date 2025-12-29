@@ -38,7 +38,8 @@ nav:
           - Optimistic vs Pessimistic Locking: databases/optimistic-vs-pessimistic-locking.md
       - Security:
           - Overview: security/overview.md
-  - Architecture:
-      - Overview: architecture/layered.md
-      - Layered: architecture/layered.md
-      - Microservices: architecture/microservices.md
+      - Architecture:
+          - Overview: architecture/layered.md
+          - Layered: architecture/layered.md
+          - Microservices: architecture/microservices.md
+          - Exception Handling Guideline: architecture/layered-architecture-exceptions-handling.md
