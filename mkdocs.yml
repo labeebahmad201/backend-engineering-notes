@@ -39,7 +39,7 @@ nav:
       - Security:
           - Overview: security/overview.md
       - Architecture:
-          - Overview: architecture/layered.md
+          - Overview: architecture/index.md
           - Layered: architecture/layered.md
           - Microservices: architecture/microservices.md
           - Exception Handling Guideline: architecture/layered-architecture-exceptions-handling.md
