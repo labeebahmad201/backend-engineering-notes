@@ -42,4 +42,4 @@ nav:
           - Overview: architecture/overview.md
           - Layered: architecture/layered.md
           - Microservices: architecture/microservices.md
-          - Exception Handling Guideline: architecture/layered-architecture-exceptions-handling.md
+          - Layered Architecture & Exception Handling Guide: architecture/layered-architecture-exceptions-handling.md
