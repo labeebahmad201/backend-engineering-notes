@@ -1,0 +1,1813 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Practical backend engineering notes">
+      
+      
+        <meta name="author" content="labeeb">
+      
+      
+      
+        <link rel="prev" href="../overview/">
+      
+      
+        <link rel="next" href="../optimistic-vs-pessimistic-locking/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+    
+    
+      
+        <title>Database Optimization From Indexes to Partitioning - Backend Engineering Notes</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../css/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#database-optimization-from-indexes-to-partitioning" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Backend Engineering Notes" class="md-header__button md-logo" aria-label="Backend Engineering Notes" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Backend Engineering Notes
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Database Optimization From Indexes to Partitioning
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../.." class="md-tabs__link">
+          
+  
+  
+  Home
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Backend Engineering Notes" class="md-nav__button md-logo" aria-label="Backend Engineering Notes" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Backend Engineering Notes
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_1" id="__nav_1_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Home
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Main
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_1_2" id="__nav_1_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Networking
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_1_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_1_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Networking
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../networking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../networking/osi/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OSI Model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../networking/osi-unit-of-data/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OSI Layer's Unit of Data
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_1_3" id="__nav_1_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Databases
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_1_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_1_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Databases
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Database Optimization From Indexes to Partitioning
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Database Optimization From Indexes to Partitioning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Setup
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#create-the-orders-table" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Create the Orders Table
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#seed-the-table-with-sample-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Seed the Table with Sample Data
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#run-a-query-without-an-index" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Run a Query Without an Index
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-developers-mistake" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Common developers mistake:
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#generate-millions-of-records" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Generate Millions of Records
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Generate Millions of Records">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Notes:
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#optimize-with-a-single-index" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Optimize with a Single Index
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#re-run-the-query-with-the-index" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Re-run the Query with the Index
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-13-analyze-the-optimized-query-output" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 13: Analyze the Optimized Query Output
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 13: Analyze the Optimized Query Output">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#breakdown" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Breakdown
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#key-observations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Observations
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#explore-low-cardinality-indexes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Explore Low-Cardinality Indexes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#understanding-cost-vs-actual-time-in-queries" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Understanding Cost vs Actual Time in Queries
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#breakdown_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Breakdown
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Breakdown">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cost" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cost
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#actual-time" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Actual Time
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#solution-combine-with-a-high-cardinality-column" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Solution: Combine with a High-Cardinality Column
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#understanding-column-cardinality-queries-in-sql" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Understanding Column Cardinality Queries in SQL
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cardinality-per-status" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cardinality per Status
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#when-composite-indexes-stop-working" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When composite indexes stop working
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../optimistic-vs-pessimistic-locking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Optimistic vs Pessimistic Locking
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_1_4" id="__nav_1_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_1_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_1_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Security
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_1_5" id="__nav_1_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_1_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_1_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Architecture
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/layered.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Layered
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/microservices/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Microservices
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/layered-architecture-exceptions-handling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Layered Architecture & Exception Handling Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/domain-exceptions-in-ts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Domain Exceptions in Typescript
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/NestJS%20Service%20Layer%20Types%20-%20Best%20Practices/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NestJS Service Layer Types - Best Practices.md
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/redis-hset-and-hincrby/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Working with Redis Hashes- HSET and HINCRBY
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Setup
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#create-the-orders-table" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Create the Orders Table
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#seed-the-table-with-sample-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Seed the Table with Sample Data
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#run-a-query-without-an-index" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Run a Query Without an Index
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-developers-mistake" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Common developers mistake:
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#generate-millions-of-records" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Generate Millions of Records
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Generate Millions of Records">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Notes:
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#optimize-with-a-single-index" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Optimize with a Single Index
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#re-run-the-query-with-the-index" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Re-run the Query with the Index
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-13-analyze-the-optimized-query-output" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 13: Analyze the Optimized Query Output
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 13: Analyze the Optimized Query Output">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#breakdown" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Breakdown
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#key-observations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Observations
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#explore-low-cardinality-indexes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Explore Low-Cardinality Indexes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#understanding-cost-vs-actual-time-in-queries" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Understanding Cost vs Actual Time in Queries
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#breakdown_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Breakdown
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Breakdown">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cost" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cost
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#actual-time" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Actual Time
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#solution-combine-with-a-high-cardinality-column" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Solution: Combine with a High-Cardinality Column
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#understanding-column-cardinality-queries-in-sql" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Understanding Column Cardinality Queries in SQL
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cardinality-per-status" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cardinality per Status
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#when-composite-indexes-stop-working" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When composite indexes stop working
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="database-optimization-from-indexes-to-partitioning">Database Optimization: From Indexes to Partitioning</h1>
+<p>When a table has no indexes, the database has no shortcuts. Every query forces it to scan all rows, which works at small scale but quickly becomes a bottleneck as data grows.  </p>
+<p>But what is an index? It’s a data structure that lets the database find rows quickly, avoiding full table scans.</p>
+<hr />
+<h2 id="setup">Setup</h2>
+<p>In this lab, I will be using <strong>PostgreSQL</strong>. Make sure you have it installed and ready to use.<br />
+I recommend using <strong><a href="https://dbeaver.io/">DBeaver</a></strong> as the SQL client to connect to your database and run queries interactively.</p>
+<hr />
+<h2 id="create-the-orders-table">Create the Orders Table</h2>
+<p>First, I will create a simple <code>orders</code> table:</p>
+<pre><code class="language-sql">CREATE TABLE orders (
+    id BIGSERIAL PRIMARY KEY,
+    user_id BIGINT,
+    status TEXT,
+    amount NUMERIC,
+    created_at TIMESTAMP
+);
+</code></pre>
+<h2 id="seed-the-table-with-sample-data">Seed the Table with Sample Data</h2>
+<p>Next, I will insert some sample data so I can see how queries behave without indexes:</p>
+<pre><code class="language-sql">INSERT INTO orders (user_id, status, amount, created_at)
+SELECT
+    (random() * 100)::int,
+    CASE WHEN random() &lt; 0.8 THEN 'completed' ELSE 'pending' END,
+    random() * 500,
+    now() - (random() * interval '30 days')
+FROM generate_series(1, 1000);
+</code></pre>
+<h2 id="run-a-query-without-an-index">Run a Query Without an Index</h2>
+<p>Now I will run a query to find all orders for user_id = 42:</p>
+<pre><code class="language-sql">SELECT * FROM orders WHERE user_id = 42;
+</code></pre>
+<p>Since there is no index, PostgreSQL must check every row to find matching results. This is called a full table scan.</p>
+<h2 id="common-developers-mistake">Common developers mistake:</h2>
+<p>With only a few thousand rows, this might seem fine, which is why many developers test only on empty or small databases. To see the real performance impact, we will generate millions of rows in later steps, simulating a production-scale workload.</p>
+<h2 id="generate-millions-of-records">Generate Millions of Records</h2>
+<p>To test performance realistically, I will generate <strong>10 million orders</strong>. This simulates a production-scale table where full table scans start to become painfully slow.</p>
+<pre><code class="language-sql">INSERT INTO orders (user_id, status, amount, created_at)
+SELECT
+    (random() * 100000)::int, -- user_id between 0 and 100,000
+    CASE WHEN random() &lt; 0.8 THEN 'completed' ELSE 'pending' END,
+    random() * 500,
+    now() - (random() * interval '365 days')
+FROM generate_series(1, 10000000);
+</code></pre>
+<h3 id="notes">Notes:</h3>
+<ul>
+<li>user_id is spread across 100,000 users.</li>
+<li>status is 80% completed, 20% pending.</li>
+<li>created_at is randomly spread over the past year.</li>
+<li>generate_series(1, 10000000) creates 10 million rows.</li>
+</ul>
+<p>This ensures our queries test realistic load, unlike small or empty databases.</p>
+<p>To see exactly how PostgreSQL handles this large table, I use EXPLAIN ANALYZE:</p>
+<pre><code class="language-sql">EXPLAIN ANALYZE
+SELECT * FROM orders WHERE user_id = 42;
+</code></pre>
+<p>Here is the output of EXPLAIN ANALYZE:</p>
+<pre><code>Gather  (cost=1000.00..146566.74 rows=98 width=44) (actual time=15.977..566.886 rows=113 loops=1)
+  Workers Planned: 2
+  Workers Launched: 2
+  -&gt;  Parallel Seq Scan on orders  (cost=0.00..145556.94 rows=41 width=44) (actual time=10.467..460.595 rows=38 loops=3)
+        Filter: (user_id = 42)
+        Rows Removed by Filter: 3333629
+Planning Time: 0.175 ms
+Execution Time: 566.946 ms
+</code></pre>
+<p>Let’s break it down:</p>
+<ul>
+<li>
+<p><strong><code>Gather</code></strong>: This node collects results from multiple parallel workers. We planned and launched 2 workers, so PostgreSQL splits the table and combines the rows found by each worker.</p>
+</li>
+<li>
+<p><strong><code>Parallel Seq Scan on orders</code></strong>: Each worker performs a <strong>sequential scan</strong> on its portion of the table. Since there is <strong>no index</strong>, the worker must read all rows in its chunk. The filter <code>user_id = 42</code> is applied after reading each row.</p>
+</li>
+<li>
+<p><strong><code>Rows Removed by Filter</code></strong>: Shows how many rows were read but didn’t match the filter. Each worker discarded millions of non-matching rows, which explains why the query is slow even with parallelism.</p>
+</li>
+<li>
+<p><strong><code>actual time=10.467..460.595</code></strong>: For this worker, it took ~10.5 ms to return the first matching row, and ~460.6 ms to finish scanning all its assigned rows. The wide gap indicates that the <strong>bulk of time is spent scanning non-matching rows</strong>.</p>
+</li>
+<li>
+<p><strong><code>Execution Time: 566.946 ms</code></strong>: This is the total time for the query including combining results from both workers. It’s noticeably slower than queries on small tables, showing the cost of scanning 10M rows without an index.</p>
+</li>
+<li>
+<p><strong><code>cost=0.00..145556.94</code></strong>: Planner’s estimated cost to return the first row and all rows. While not in milliseconds, a large difference between start and end suggests the planner expects significant work.</p>
+</li>
+<li>
+<p><strong><code>rows=41 (actual 38)</code></strong>: Estimated vs actual rows returned by each worker. Close numbers indicate the planner’s estimates are reasonably accurate.</p>
+</li>
+<li>
+<p><strong><code>width=44</code></strong>: Average row size in bytes, which helps the planner estimate memory and I/O requirements.</p>
+</li>
+</ul>
+<p><strong>Key takeaway:</strong> Without an index, <strong>every row is read</strong> even if only a few match. Parallelism helps, but the database still scans millions of rows. This makes <code>Seq Scan</code> a clear performance bottleneck, and it’s exactly what an index will fix.</p>
+<h2 id="optimize-with-a-single-index">Optimize with a Single Index</h2>
+<p>To avoid scanning all 10 million rows, I will create an <strong>index on <code>user_id</code></strong>. This allows PostgreSQL to jump directly to the matching rows.</p>
+<pre><code class="language-sql">CREATE INDEX idx_orders_user_id ON orders(user_id);
+</code></pre>
+<blockquote>
+<p>Note: Creating an index on 10M rows may take a few seconds to a couple of minutes depending on your machine.</p>
+</blockquote>
+<h2 id="re-run-the-query-with-the-index">Re-run the Query with the Index</h2>
+<p>Now, I rerun the same query:</p>
+<pre><code class="language-sql">EXPLAIN ANALYZE
+SELECT * FROM orders WHERE user_id = 42;
+</code></pre>
+<h2 id="step-13-analyze-the-optimized-query-output">Step 13: Analyze the Optimized Query Output</h2>
+<p>After creating the index on <code>user_id</code>, the query now returns:</p>
+<pre><code>Bitmap Heap Scan on orders  (cost=5.19..388.90 rows=98 width=44) (actual time=0.092..0.258 rows=113 loops=1)
+  Recheck Cond: (user_id = 42)
+  Heap Blocks: exact=110
+  -&gt;  Bitmap Index Scan on idx_orders_user_id  (cost=0.00..5.17 rows=98 width=0) (actual time=0.050..0.050 rows=113 loops=1)
+        Index Cond: (user_id = 42)
+Planning Time: 0.174 ms
+Execution Time: 0.294 ms
+</code></pre>
+<h3 id="breakdown">Breakdown</h3>
+<ul>
+<li><strong><code>Bitmap Index Scan on idx_orders_user_id</code></strong>  </li>
+<li>PostgreSQL scans the <strong>index</strong> first to find the matching <code>user_id = 42</code>.  </li>
+<li><code>Index Cond: (user_id = 42)</code> → filter is applied directly on the index.  </li>
+<li>
+<p><code>actual time=0.050..0.050</code> → scanning the index is almost instantaneous.</p>
+</li>
+<li>
+<p><strong><code>Bitmap Heap Scan on orders</code></strong>  </p>
+</li>
+<li>After the index identifies matching rows, PostgreSQL retrieves the actual table rows (heap) using a <strong>bitmap of pointers</strong>.  </li>
+<li><code>Recheck Cond: (user_id = 42)</code> → ensures the rows from the heap still satisfy the condition (safety check).  </li>
+<li><code>Heap Blocks: exact=110</code> → only 110 table blocks needed to fetch 113 rows, compared to millions previously.  </li>
+<li>
+<p><code>actual time=0.092..0.258</code> → fetching the actual rows is very fast now.</p>
+</li>
+<li>
+<p><strong><code>Planning Time: 0.174 ms</code></strong> → planner quickly decided the index plan.  </p>
+</li>
+<li><strong><code>Execution Time: 0.294 ms</code></strong> → total time dropped from ~566 ms to <strong>less than 1 ms</strong>.  </li>
+</ul>
+<h3 id="key-observations">Key Observations</h3>
+<ul>
+<li>The database no longer performs a <strong>full table scan</strong>; instead, it jumps directly to the rows via the index.  </li>
+<li>Only the <strong>relevant heap blocks</strong> are accessed, drastically reducing I/O.  </li>
+<li>Even though this is a <strong>Bitmap Heap Scan</strong> (instead of a pure Index Scan), it’s still <strong>orders of magnitude faster</strong> than the previous sequential scan.  </li>
+</ul>
+<p><strong>Takeaway:</strong>  </p>
+<ul>
+<li>Adding an index on <code>user_id</code> transforms a slow query touching millions of rows into a near-instant lookup.  </li>
+<li>PostgreSQL smartly uses a <strong>bitmap scan</strong> to minimize disk reads when multiple rows match, balancing speed and efficiency.</li>
+</ul>
+<h2 id="explore-low-cardinality-indexes">Explore Low-Cardinality Indexes</h2>
+<p>Some columns, like status with only a few possible values (completed, pending), have low cardinality.</p>
+<p>Creating a standard index on low-cardinality columns may not help much.</p>
+<p>You can test with:</p>
+<pre><code class="language-sql">CREATE INDEX idx_orders_status ON orders(status);
+EXPLAIN ANALYZE
+SELECT * FROM orders WHERE status = 'pending';
+</code></pre>
+<p>Observe whether PostgreSQL actually uses the index. Sometimes a sequential scan is faster for low-cardinality columns because the index doesn’t reduce row scanning significantly.</p>
+<h2 id="understanding-cost-vs-actual-time-in-queries">Understanding Cost vs Actual Time in Queries</h2>
+<p>When we run <code>EXPLAIN ANALYZE</code>, PostgreSQL shows two important metrics:</p>
+<pre><code class="language-sql">Seq Scan on orders  (cost=0.00..218480.50 rows=2034870 width=44) (actual time=0.047..2097.477 rows=1999924 loops=1)
+</code></pre>
+<h2 id="breakdown_1">Breakdown</h2>
+<h3 id="cost">Cost</h3>
+<ul>
+<li>
+<p>cost=0.00..218480.50</p>
+<ul>
+<li>0.00 → estimated cost to return the first row</li>
+<li>218480.50 → estimated cost to return all rows</li>
+</ul>
+<p>Meaning: Planner’s prediction of work before executing the query
+Units: Relative units; not milliseconds or dollars</p>
+</li>
+</ul>
+<h3 id="actual-time">Actual Time</h3>
+<ul>
+<li>
+<p>actual time=0.047..2097.477</p>
+<ul>
+<li>0.047 ms → time to return the first row</li>
+<li>2097.477 ms → time to return all rows</li>
+</ul>
+<p>Meaning: Measured time after execution, actual query duration</p>
+</li>
+</ul>
+<p>**Takeaway: Not every column deserves an index; analyze cardinality and query patterns first.
+**</p>
+<p>While point of indexing is skipping values that are not relevant but if a bunch of rows have same value then we skip x but y is then too much so we have to do full table scan. </p>
+<h2 id="solution-combine-with-a-high-cardinality-column">Solution: Combine with a High-Cardinality Column</h2>
+<p>We can create a composite index on user_id (high cardinality) and status (low cardinality):</p>
+<pre><code class="language-sql">CREATE INDEX idx_orders_user_status
+ON orders(user_id, status);
+</code></pre>
+<pre><code>Index Scan using idx_orders_user_status on orders  (cost=0.43..84.83 rows=20 width=44) (actual time=1.641..11.025 rows=27 loops=1)
+  Index Cond: ((user_id = 43) AND (status = 'pending'::text))
+Planning Time: 3.779 ms
+Execution Time: 11.071 ms
+</code></pre>
+<ul>
+<li>Now the index first narrows down by user_id (selective) and then filters by status.</li>
+<li>Even though status alone is low cardinality, combining it with a selective column makes the index effective.</li>
+</ul>
+<h2 id="understanding-column-cardinality-queries-in-sql">Understanding Column Cardinality Queries in SQL</h2>
+<p><strong>1. Cardinality per User</strong></p>
+<pre><code class="language-sql">SELECT user_id, COUNT(*) AS cardinality
+FROM orders
+GROUP BY user_id
+ORDER BY cardinality DESC;
+</code></pre>
+<h2 id="cardinality-per-status">Cardinality per Status</h2>
+<pre><code class="language-sql">SELECT COUNT(*) AS cardinality
+FROM orders
+GROUP BY status
+ORDER BY cardinality DESC;
+</code></pre>
+<p>Whichever column has low cardinality, you can use that. </p>
+<h2 id="when-composite-indexes-stop-working">When composite indexes stop working</h2>
+<p>Even with (user_id, status) composite index, if a user has millions of orders, queries like WHERE user_id = 123 AND status = 'pending' still scan many rows for that user.</p>
+<p>That tells us that we need to do query monitoring at the DB level cause most customers may not have that much data and for them queries may not be that slow.
+But there may be customers with significant number of rows that DBMS decides to use full table scan and performance degrades for that user.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "content.code.copy", "header.autohide"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="../../js/author-avatar.js"></script>
+      
+    
+  </body>
+</html>
