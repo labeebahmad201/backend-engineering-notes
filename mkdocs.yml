@@ -45,3 +45,5 @@ nav:
           - Layered Architecture & Exception Handling Guide: architecture/layered-architecture-exceptions-handling.md
           - Domain Exceptions in Typescript: architecture/domain-exceptions-in-ts.md
           - NestJS Service Layer Types - Best Practices.md: architecture/NestJS Service Layer Types - Best Practices.md
+          - Working with Redis Hashes- HSET and HINCRBY: architecture/redis-hset-and-hincrby.md
+
