@@ -43,3 +43,4 @@ nav:
           - Layered: architecture/layered.md
           - Microservices: architecture/microservices.md
           - Layered Architecture & Exception Handling Guide: architecture/layered-architecture-exceptions-handling.md
+          - Domain Exceptions in Typescript: architecture/domain-exceptions-in-ts.md
